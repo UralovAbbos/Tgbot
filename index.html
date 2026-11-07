@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ombor Boshqaruvi Mini App</title>
+    <!-- Telegram Web App JS SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f8;
+        }
+        /* Yuqori panel */
+        .header {
+            display: flex;
+            align-items: center;
+            background-color: #0088cc;
+            color: white;
+            padding: 10px 15px;
+        }
+        .menu-btn {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 15px;
+            user-select: none;
+        }
+        /* Yon menyu (Sidebar / Drawer) */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            background-color: #1e2b37;
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+        }
+        .sidebar a {
+            padding: 12px 20px;
+            text-decoration: none;
+            font-size: 15px;
+            color: #e1e1e1;
+            display: block;
+            border-bottom: 1px solid #2c3e50;
+        }
+        .sidebar a:hover {
+            background-color: #2c3e50;
+            color: #fff;
+        }
+        .sidebar .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            color: white;
+            cursor: pointer;
+        }
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- YUQORI PANEL -->
+    <div class="header">
+        <span class="menu-btn" onclick="openNav()">&#9776;</span>
+        <h4 style="margin: 0;">Ombor Boshqaruvi</h4>
+    </div>
+
+    <!-- CHAP YON MENYU (ORGANIZATSIYALAR) -->
+    <div id="mySidebar" class="sidebar">
+        <span class="close-btn" onclick="closeNav()">&times;</span>
+        <h5 style="color: #8fa0b5; padding-left: 20px; margin-bottom: 10px;">ORGANIZATSIYALAR</h5>
+        <div id="org-list">
+            <!-- Bu yerga JS orqali ruxsat etilgan organizatsiyalar yuklanadi -->
+        </div>
+    </div>
+
+    <!-- ASOSIY OYNA -->
+    <div class="content">
+        <h3 id="user-greeting">Yuklanmoqda...</h3>
+        <p id="user-info"></p>
+        <div id="main-data">
+            <p>Iltimos, organizatsiyani tanlash uchun chap yuqoridagi ☰ menyuni bosing.</p>
+        </div>
+    </div>
+
+    <script>
+        // Telegram WebApp ni ishga tushiramiz
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Ekran bo'ylab yoyish
+
+        // 1. TELEGRAM UNIKAL ID SINI OLAMIZ
+        const tgUser = tg.initDataUnsafe?.user;
+        const currentUserId = tgUser ? tgUser.id : 123456789; // Test uchun default ID
+
+        // BARCHA ORGANIZATSIYALAR RO'YXATI
+        const allOrganizations = [
+            "IO", "Бухара-2", "Зарафшан", "Навои", "Бухара", 
+            "Коканд", "Наманган-2", "Андижан", "Фергана-2", 
+            "EW", "Sterling Beverages", 
+            "Шахрисабз", "Карши", "Денау", "Карши-2", "Термез", 
+            "Нукус", "Хорезм", "Турткуль", 
+            "Самарканд Трейдинг", "Самарканд Карвон", "Каттакурган", "Джиззак", 
+            "Янгиюль", "Алмалык", "Сырдарья", "Чирчик"
+        ];
+
+        // =========================================================================
+        // 2. ID BO'YICHA DOSTUP (RUXSATLAR) SOZLAMASI
+        // =========================================================================
+        
+        // ADMIN TELEGRAM ID-LARI (Barcha organizatsiyalarni ko'radi)
+        const ADMIN_IDS = [
+            123456789, // <-- BU YERGA O'ZINGIZNING TELEGRAM ID-INGIZNI YOZING
+            987654321  // <-- BU YERGA IKKINCHI ADMIN (YOKI IKKINCHI AKKAUNTINGIZ) ID-SINI YOZING
+        ];
+
+        // ODDY XODIMLAR VA ULARGA BIRIKTIRILGAN ORGANIZATSIYALAR
+        // (Siz usha 8 ta odamning ID-si va ularga tegishli viloyat/organizatsiyalarni shu yerda biriktirasiz)
+        const EMPLOYEE_PERMISSIONS = {
+            // Misol: 1-xodim (Telegram ID: 1111111) faqat Farg'ona va Qo'qonni ko'radi
+            1111111: ["Коканд", "Фергана-2", "Андижан"],
+
+            // Misol: 2-xodim (Telegram ID: 2222222) Buxoro filiyallarini ko'radi
+            2222222: ["Бухара", "Бухара-2", "Зарафшан"],
+
+            // Misol: 3-xodim (Telegram ID: 3333333)
+            3333333: ["Самарканд Трейдинг", "Самарканд Карвон", "Каттакурган"],
+
+            // Misol: 4-xodim (Telegram ID: 4444444)
+            4444444: ["Шахрисабз", "Карши", "Карши-2", "Денау", "Термез"],
+
+            // 5, 6, 7, 8-xodimlarni ham shu tartibda qo'shib ketasiz...
+        };
+
+        // =========================================================================
+
+        // FOYDALANUVCHINING RUXSAT ETILGAN ORGANIZATSIYALARINI ANIQLASH FUNKSIYASI
+        function getUserOrganizations(userId) {
+            // Agar Admin bo'lsa -> Hamma 27 ta organizatsiyani qaytaradi
+            if (ADMIN_IDS.includes(userId)) {
+                return allOrganizations;
+            }
+            
+            // Agar oddiy xodim bo'lsa -> Nomeriga mos organizatsiyalarni qaytaradi
+            if (EMPLOYEE_PERMISSIONS[userId]) {
+                return EMPLOYEE_PERMISSIONS[userId];
+            }
+
+            // Agar bazada/ro'yxatda bo'lmasa -> Bo'sh ro'yxat
+            return [];
+        }
+
+        // MENYUNI TO'LDIRISH
+        function renderSidebarMenu() {
+            const allowedOrgs = getUserOrganizations(currentUserId);
+            const container = document.getElementById("org-list");
+            container.innerHTML = "";
+
+            if (allowedOrgs.length === 0) {
+                container.innerHTML = "<p style='color:red; padding: 10px;'>Sizga hech qanday organizatsiya biriktirilmagan!</p>";
+                return;
+            }
+
+            allowedOrgs.forEach(org => {
+                const a = document.createElement("a");
+                a.href = "#";
+                a.innerText = org;
+                a.onclick = () => selectOrganization(org);
+                container.appendChild(a);
+            });
+        }
+
+        function selectOrganization(orgName) {
+            document.getElementById("main-data").innerHTML = `<h4>Tanlangan organizatsiya: <span style="color:#0088cc;">${orgName}</span></h4><p>Bu yerda ${orgName} bo'yicha keldi/ketti va muzlatgichlar qoldig'i chiqadi.</p>`;
+            closeNav();
+        }
+
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+        }
+
+        // SAHIFI YUKLANGANDA ISHGA TUSHADI
+        window.onload = function() {
+            if (tgUser) {
+                document.getElementById("user-greeting").innerText = `Assalomu alaykum, ${tgUser.first_name}!`;
+                document.getElementById("user-info").innerText = `Telegram ID: ${currentUserId} (${ADMIN_IDS.includes(currentUserId) ? 'ADMIN' : 'XODIM'})`;
+            } else {
+                document.getElementById("user-greeting").innerText = "Test Rejimi";
+            }
+            renderSidebarMenu();
+        };
+    </script>
+</body>
+</html>
