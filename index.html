@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ombor Boshqaruvi Mini App</title>
-    <!-- Telegram Web App JS SDK -->
+    <title>Ombor Boshqaruvi</title>
+    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -13,13 +13,12 @@
             padding: 0;
             background-color: #f4f6f8;
         }
-        /* Yuqori panel */
         .header {
             display: flex;
             align-items: center;
             background-color: #0088cc;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 15px;
         }
         .menu-btn {
             font-size: 24px;
@@ -27,7 +26,6 @@
             margin-right: 15px;
             user-select: none;
         }
-        /* Yon menyu (Sidebar / Drawer) */
         .sidebar {
             height: 100%;
             width: 0;
@@ -67,7 +65,7 @@
 </head>
 <body>
 
-    <!-- YUQORI PANEL -->
+    <!-- YUQORI PANEL (3 TA CHIZIQCHA) -->
     <div class="header">
         <span class="menu-btn" onclick="openNav()">&#9776;</span>
         <h4 style="margin: 0;">Ombor Boshqaruvi</h4>
@@ -77,28 +75,25 @@
     <div id="mySidebar" class="sidebar">
         <span class="close-btn" onclick="closeNav()">&times;</span>
         <h5 style="color: #8fa0b5; padding-left: 20px; margin-bottom: 10px;">ORGANIZATSIYALAR</h5>
-        <div id="org-list">
-            <!-- Bu yerga JS orqali ruxsat etilgan organizatsiyalar yuklanadi -->
-        </div>
+        <div id="org-list"></div>
     </div>
 
     <!-- ASOSIY OYNA -->
     <div class="content">
         <h3 id="user-greeting">Yuklanmoqda...</h3>
-        <p id="user-info"></p>
-        <div id="main-data">
-            <p>Iltimos, organizatsiyani tanlash uchun chap yuqoridagi ☰ menyuni bosing.</p>
+        <p id="user-info" style="color: #666; font-size: 14px;"></p>
+        <div id="main-data" style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <p>Iltimos, organizatsiyani tanlash uchun chap yuqoridagi <b>☰</b> menyuni bosing.</p>
         </div>
     </div>
 
     <script>
-        // Telegram WebApp ni ishga tushiramiz
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Ekran bo'ylab yoyish
+        tg.expand();
 
-        // 1. TELEGRAM UNIKAL ID SINI OLAMIZ
+        // Foydalanuvchining Telegram ID sini olamiz
         const tgUser = tg.initDataUnsafe?.user;
-        const currentUserId = tgUser ? tgUser.id : 123456789; // Test uchun default ID
+        const currentUserId = tgUser ? tgUser.id : null;
 
         // BARCHA ORGANIZATSIYALAR RO'YXATI
         const allOrganizations = [
@@ -112,49 +107,29 @@
         ];
 
         // =========================================================================
-        // 2. ID BO'YICHA DOSTUP (RUXSATLAR) SOZLAMASI
+        // RUXSATLAR (ADMINLAR VA XODIMLAR)
         // =========================================================================
         
-        // ADMIN TELEGRAM ID-LARI (Barcha organizatsiyalarni ko'radi)
+        // 1. ADMIN ID-lari (Barcha 27 ta organizatsiyani ko'radi)
         const ADMIN_IDS = [
-            123456789, // <-- BU YERGA O'ZINGIZNING TELEGRAM ID-INGIZNI YOZING
-            987654321  // <-- BU YERGA IKKINCHI ADMIN (YOKI IKKINCHI AKKAUNTINGIZ) ID-SINI YOZING
+            8777094765 // <-- O'z Telegram ID raqamingizni shu yerga yozing
         ];
 
-        // ODDY XODIMLAR VA ULARGA BIRIKTIRILGAN ORGANIZATSIYALAR
-        // (Siz usha 8 ta odamning ID-si va ularga tegishli viloyat/organizatsiyalarni shu yerda biriktirasiz)
+        // 2. 8 TA XODIMNING ID-SI VA ULARGA TEGISHLI ORGANIZATSIYALAR
         const EMPLOYEE_PERMISSIONS = {
-            // Misol: 1-xodim (Telegram ID: 1111111) faqat Farg'ona va Qo'qonni ko'radi
+            // Misol uchun: 1111111 ID raqamli xodim
             1111111: ["Коканд", "Фергана-2", "Андижан"],
-
-            // Misol: 2-xodim (Telegram ID: 2222222) Buxoro filiyallarini ko'radi
-            2222222: ["Бухара", "Бухара-2", "Зарафшан"],
-
-            // Misol: 3-xodim (Telegram ID: 3333333)
-            3333333: ["Самарканд Трейдинг", "Самарканд Карвон", "Каттакурган"],
-
-            // Misol: 4-xodim (Telegram ID: 4444444)
-            4444444: ["Шахрисабз", "Карши", "Карши-2", "Денау", "Термез"],
-
-            // 5, 6, 7, 8-xodimlarni ham shu tartibda qo'shib ketasiz...
+            // Qolgan xodimlarni ID raqami va viloyatlarini shu yerga yozib chiqasiz
         };
 
-        // =========================================================================
-
-        // FOYDALANUVCHINING RUXSAT ETILGAN ORGANIZATSIYALARINI ANIQLASH FUNKSIYASI
         function getUserOrganizations(userId) {
-            // Agar Admin bo'lsa -> Hamma 27 ta organizatsiyani qaytaradi
             if (ADMIN_IDS.includes(userId)) {
-                return allOrganizations;
+                return allOrganizations; // Admin hamma organizatsiyani ko'radi
             }
-            
-            // Agar oddiy xodim bo'lsa -> Nomeriga mos organizatsiyalarni qaytaradi
             if (EMPLOYEE_PERMISSIONS[userId]) {
-                return EMPLOYEE_PERMISSIONS[userId];
+                return EMPLOYEE_PERMISSIONS[userId]; // Xodim faqat o'zinikini ko'radi
             }
-
-            // Agar bazada/ro'yxatda bo'lmasa -> Bo'sh ro'yxat
-            return [];
+            return []; // Agar bazada/ro'yxatda bo'lmasa
         }
 
         // MENYUNI TO'LDIRISH
@@ -164,7 +139,7 @@
             container.innerHTML = "";
 
             if (allowedOrgs.length === 0) {
-                container.innerHTML = "<p style='color:red; padding: 10px;'>Sizga hech qanday organizatsiya biriktirilmagan!</p>";
+                container.innerHTML = "<p style='color:#ff6b6b; padding: 15px;'>Sizga bu tizimdan foydalanishga ruxsat berilmagan!</p>";
                 return;
             }
 
@@ -178,7 +153,10 @@
         }
 
         function selectOrganization(orgName) {
-            document.getElementById("main-data").innerHTML = `<h4>Tanlangan organizatsiya: <span style="color:#0088cc;">${orgName}</span></h4><p>Bu yerda ${orgName} bo'yicha keldi/ketti va muzlatgichlar qoldig'i chiqadi.</p>`;
+            document.getElementById("main-data").innerHTML = `
+                <h4 style="margin-top:0; color:#0088cc;">${orgName}</h4>
+                <p>Bu yerda ombordagi muzlatgichlar qoldig‘i va kiritish oynasi bo‘ladi.</p>
+            `;
             closeNav();
         }
 
@@ -190,13 +168,15 @@
             document.getElementById("mySidebar").style.width = "0";
         }
 
-        // SAHIFI YUKLANGANDA ISHGA TUSHADI
+        // SAHIFA OCHILgANDA
         window.onload = function() {
             if (tgUser) {
                 document.getElementById("user-greeting").innerText = `Assalomu alaykum, ${tgUser.first_name}!`;
-                document.getElementById("user-info").innerText = `Telegram ID: ${currentUserId} (${ADMIN_IDS.includes(currentUserId) ? 'ADMIN' : 'XODIM'})`;
+                const isAdmin = ADMIN_IDS.includes(currentUserId);
+                document.getElementById("user-info").innerText = `ID: ${currentUserId} | Status: ${isAdmin ? 'Admin 👑' : 'Xodim 👤'}`;
             } else {
-                document.getElementById("user-greeting").innerText = "Test Rejimi";
+                document.getElementById("user-greeting").innerText = "Assalomu alaykum!";
+                document.getElementById("user-info").innerText = "Test rejimi (Telegram ID aniqlanmadi)";
             }
             renderSidebarMenu();
         };
