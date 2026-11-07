@@ -170,6 +170,8 @@
 
         // SAHIFA OCHILgANDA
         window.onload = function() {
+            alert("Kelgan ID: " + currentUserId);
+            
             if (tgUser) {
                 document.getElementById("user-greeting").innerText = `Assalomu alaykum, ${tgUser.first_name}!`;
                 const isAdmin = ADMIN_IDS.includes(currentUserId);
