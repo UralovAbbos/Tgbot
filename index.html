@@ -91,9 +91,22 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Foydalanuvchining Telegram ID sini olamiz
-        const tgUser = tg.initDataUnsafe?.user;
-        const currentUserId = tgUser ? tgUser.id : null;
+       // Foydalanuvchining Telegram ID sini aniqlash
+        let currentUserId = null;
+        let tgUser = null;
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            const webApp = window.Telegram.WebApp;
+            webApp.expand();
+            
+            if (webApp.initDataUnsafe && webApp.initDataUnsafe.user) {
+                tgUser = webApp.initDataUnsafe.user;
+                currentUserId = tgUser.id;
+            }
+        }
+        
+        // Agar baribir null bo'lsa, test uchun o'z ID raqamingizni majburiy berib turamiz (ishlayotganini ko'rish uchun)
+        // currentUserId = 877709476;
 
         // BARCHA ORGANIZATSIYALAR RO'YXATI
         const allOrganizations = [
