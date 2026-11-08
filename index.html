@@ -7,18 +7,24 @@
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f6f8;
+            background-color: #0f1e36;
+            color: #ffffff;
         }
+        /* YUQORI HEADER */
         .header {
             display: flex;
             align-items: center;
-            background-color: #0088cc;
+            background-color: #1e2b37;
             color: white;
             padding: 12px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .menu-btn {
             font-size: 24px;
@@ -26,17 +32,20 @@
             margin-right: 15px;
             user-select: none;
         }
+        
+        /* SIDEBAR MENYU */
         .sidebar {
             height: 100%;
             width: 0;
             position: fixed;
-            z-index: 10;
+            z-index: 100;
             top: 0;
             left: 0;
-            background-color: #1e2b37;
+            background-color: #142235;
             overflow-x: hidden;
             transition: 0.3s;
             padding-top: 60px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
         }
         .sidebar a {
             padding: 12px 20px;
@@ -44,10 +53,10 @@
             font-size: 15px;
             color: #e1e1e1;
             display: block;
-            border-bottom: 1px solid #2c3e50;
+            border-bottom: 1px solid #233448;
         }
         .sidebar a:hover {
-            background-color: #2c3e50;
+            background-color: #0088cc;
             color: #fff;
         }
         .sidebar .close-btn {
@@ -58,57 +67,251 @@
             color: white;
             cursor: pointer;
         }
-        .content {
-            padding: 20px;
+
+        /* TAB NAVIGATSIYA */
+        .tab-nav {
+            display: flex;
+            background-color: #1a2938;
+            border-bottom: 1px solid #2c3e50;
         }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 5px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #8fa0b5;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: #0088cc;
+            border-bottom: 3px solid #0088cc;
+        }
+
+        /* KONTENT */
+        .content {
+            padding: 15px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* STATISTIKA KARTALARI (MAIN) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            background-color: #192a3a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #23344c;
+        }
+        .stat-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 13px;
+            color: #8fa0b5;
+        }
+        .stat-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* FORM VA RO'YXATLAR */
+        .card {
+            background-color: #192a3a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #23344c;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #8fa0b5;
+            margin-bottom: 4px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #2c3e50;
+            background-color: #0f1e36;
+            color: white;
+            font-size: 14px;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* LOG RO'YXATI (TARIX) */
+        .log-item {
+            background-color: #142235;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 4px solid #0088cc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .badge-ustanovka { background-color: #27ae60; color: white; }
+        .badge-vozvrat { background-color: #f39c12; color: white; }
+        .badge-remont { background-color: #e74c3c; color: white; }
+
+        .admin-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .btn-action {
+            padding: 4px 8px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-edit { background-color: #f39c12; color: white; }
+        .btn-delete { background-color: #c0392b; color: white; }
     </style>
 </head>
 <body>
 
-    <!-- YUQORI PANEL (3 TA CHIZIQCHA) -->
+    <!-- YUQORI HEADER -->
     <div class="header">
         <span class="menu-btn" onclick="openNav()">&#9776;</span>
-        <h4 style="margin: 0;">Ombor Boshqaruvi</h4>
+        <h4 style="margin: 0; flex-grow: 1;" id="header-title">Ombor Boshqaruvi</h4>
     </div>
 
-    <!-- CHAP YON MENYU (ORGANIZATSIYALAR) -->
+    <!-- SIDEBAR -->
     <div id="mySidebar" class="sidebar">
         <span class="close-btn" onclick="closeNav()">&times;</span>
         <h5 style="color: #8fa0b5; padding-left: 20px; margin-bottom: 10px;">ORGANIZATSIYALAR</h5>
         <div id="org-list"></div>
     </div>
 
-    <!-- ASOSIY OYNA -->
+    <!-- FOYDALANUVCHI HAQIDA QISQA MA'LUMOT -->
+    <div style="background-color: #142235; padding: 8px 15px; font-size: 12px; color: #8fa0b5; border-bottom: 1px solid #1a2938;">
+        <span id="user-greeting">Yuklanmoqda...</span> | <span id="user-info"></span>
+    </div>
+
+    <!-- TAB MENYU (MAIN / VAZIFALAR / TARIX) -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('main')">📊 Main</button>
+        <button class="tab-btn" onclick="switchTab('tasks')">📝 Vazifalar</button>
+        <button class="tab-btn" onclick="switchTab('history')">🕒 Tarix</button>
+    </div>
+
+    <!-- ASOSIY KONTENT SOHASI -->
     <div class="content">
-        <h3 id="user-greeting">Yuklanmoqda...</h3>
-        <p id="user-info" style="color: #666; font-size: 14px;"></p>
-        <div id="main-data" style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <p>Iltimos, organizatsiyani tanlash uchun chap yuqoridagi <b>☰</b> menyuni bosing.</p>
+
+        <!-- 1. MAIN TAB (DASHBOARD) -->
+        <div id="tab-main" class="tab-content active">
+            <h4 id="selected-org-name" style="margin-top: 0; color: #0088cc;">Organizatsiyani tanlang</h4>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Jami XO (Muzlatgich)</h4>
+                    <div class="value" id="stat-total">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Ishlayotgan</h4>
+                    <div class="value" id="stat-active" style="color: #2ecc71;">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Omborda (Zaxira)</h4>
+                    <div class="value" id="stat-stock" style="color: #f1c40f;">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Ta'mirda</h4>
+                    <div class="value" id="stat-repair" style="color: #e74c3c;">0</div>
+                </div>
+            </div>
         </div>
+
+        <!-- 2. VAZIFALAR TAB (AMALLARVA KIRITISH) -->
+        <div id="tab-tasks" class="tab-content">
+            <div class="card">
+                <h4 style="margin-top: 0;">Yangi Amal Kiritish</h4>
+                <div class="form-group">
+                    <label>Amal turi</label>
+                    <select id="action-type">
+                        <option value="ustanovka">Ustanovka (O'rnatish)</option>
+                        <option value="vozvrat">Vozvrat (Qaytarish)</option>
+                        <option value="remont">Remontga berish</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Muzlatgich Modeli / Kodi</label>
+                    <input type="text" id="xo-model" placeholder="Masalan: Frigoglass 400L">
+                </div>
+                <div class="form-group">
+                    <label>Soni</label>
+                    <input type="number" id="xo-qty" value="1">
+                </div>
+                <div class="form-group">
+                    <label>Savdo nuqtasi / Izoh</label>
+                    <input type="text" id="xo-note" placeholder="Do'kon nomi yoki manzili">
+                </div>
+                <button class="btn-submit" onclick="submitTask()">Saqlash</button>
+            </div>
+        </div>
+
+        <!-- 3. TARIX TAB (AUDIT VA EDIT/DELETE) -->
+        <div id="tab-history" class="tab-content">
+            <h4 style="margin-top: 0;">Amallar Tarixi</h4>
+            <div id="history-list">
+                <!-- Test uchun namuna ko'rinish -->
+                <div class="log-item">
+                    <div>
+                        <span class="badge badge-ustanovka">Ustanovka</span>
+                        <strong style="font-size: 13px; display: block; margin-top: 3px;">Frigoglass 400L (2 ta)</strong>
+                        <small style="color: #8fa0b5;">Nuqta: "Samarqand" do'koni | 08.11.2026</small>
+                    </div>
+                    <div class="admin-actions" class="admin-only">
+                        <button class="btn-action btn-edit" onclick="editLog(1)">✏️</button>
+                        <button class="btn-action btn-delete" onclick="deleteLog(1)">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-       // Foydalanuvchining Telegram ID sini aniqlash
-        let currentUserId = null;
-        let tgUser = null;
+        const tgUser = tg.initDataUnsafe?.user;
+        const currentUserId = tgUser ? tgUser.id : null;
 
-        if (window.Telegram && window.Telegram.WebApp) {
-            const webApp = window.Telegram.WebApp;
-            webApp.expand();
-            
-            if (webApp.initDataUnsafe && webApp.initDataUnsafe.user) {
-                tgUser = webApp.initDataUnsafe.user;
-                currentUserId = tgUser.id;
-            }
-        }
-        
-        // Agar baribir null bo'lsa, test uchun o'z ID raqamingizni majburiy berib turamiz (ishlayotganini ko'rish uchun)
-        // currentUserId = 877709476;
+        const ADMIN_IDS = [8777094765]; // O'z Telegram ID raqamingiz
 
-        // BARCHA ORGANIZATSIYALAR RO'YXATI
         const allOrganizations = [
             "IO", "Бухара-2", "Зарафшан", "Навои", "Бухара", 
             "Коканд", "Наманган-2", "Андижан", "Фергана-2", 
@@ -119,42 +322,30 @@
             "Янгиюль", "Алмалык", "Сырдарья", "Чирчик"
         ];
 
-        // =========================================================================
-        // RUXSATLAR (ADMINLAR VA XODIMLAR)
-        // =========================================================================
-        
-        // 1. ADMIN ID-lari (Barcha 27 ta organizatsiyani ko'radi)
-        const ADMIN_IDS = [
-            8777094765 // <-- Ortqicha '5' raqami olib tashlandi, o'z ID raqamingizni shu yerga yozasiz
-        ];
+        let selectedOrg = null;
 
-        // 2. 8 TA XODIMNING ID-SI VA ULARGA TEGISHLI ORGANIZATSIYALAR
-        const EMPLOYEE_PERMISSIONS = {
-            // Misol uchun: 1111111 ID raqamli xodim
-            1111111: ["Коканд", "Фергана-2", "Андижан"],
-            // Qolgan xodimlarni ID raqami va viloyatlarini shu yerga yozib chiqasiz
-        };
+        // TABLARNI ALMASHTIRISH
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-        function getUserOrganizations(userId) {
-            if (ADMIN_IDS.includes(userId)) {
-                return allOrganizations; // Admin hamma organizatsiyani ko'radi
-            }
-            if (EMPLOYEE_PERMISSIONS[userId]) {
-                return EMPLOYEE_PERMISSIONS[userId]; // Xodim faqat o'zinikini ko'radi
-            }
-            return []; // Agar bazada/ro'yxatda bo'lmasa
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
         }
 
-        // MENYUNI TO'LDIRISH
+        // SIDEBAR MENYU
+        function openNav() { document.getElementById("mySidebar").style.width = "250px"; }
+        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
+
+        function getUserOrganizations(userId) {
+            if (ADMIN_IDS.includes(userId)) return allOrganizations;
+            return []; // Xodimlarga moslab to'ldiriladi
+        }
+
         function renderSidebarMenu() {
             const allowedOrgs = getUserOrganizations(currentUserId);
             const container = document.getElementById("org-list");
             container.innerHTML = "";
-
-            if (allowedOrgs.length === 0) {
-                container.innerHTML = "<p style='color:#ff6b6b; padding: 15px;'>Sizga bu tizimdan foydalanishga ruxsat berilmagan!</p>";
-                return;
-            }
 
             allowedOrgs.forEach(org => {
                 const a = document.createElement("a");
@@ -166,34 +357,63 @@
         }
 
         function selectOrganization(orgName) {
-            document.getElementById("main-data").innerHTML = `
-                <h4 style="margin-top:0; color:#0088cc;">${orgName}</h4>
-                <p>Bu yerda ombordagi muzlatgichlar qoldig‘i va kiritish oynasi bo‘ladi.</p>
-            `;
+            selectedOrg = orgName;
+            document.getElementById("selected-org-name").innerText = orgName;
+            document.getElementById("header-title").innerText = orgName;
             closeNav();
-        }
-
-        function openNav() {
-            document.getElementById("mySidebar").style.width = "250px";
-        }
-
-        function closeNav() {
-            document.getElementById("mySidebar").style.width = "0";
-        }
-
-        // SAHIFA OCHILgANDA
-        window.onload = function() {
-            alert("Kelgan ID: " + currentUserId);
             
+            // Demo statistika
+            document.getElementById("stat-total").innerText = "120";
+            document.getElementById("stat-active").innerText = "95";
+            document.getElementById("stat-stock").innerText = "20";
+            document.getElementById("stat-repair").innerText = "5";
+        }
+
+        // FORM YUBORISH
+        function submitTask() {
+            if (!selectedOrg) {
+                alert("Iltimos, oldin menyudan organizatsiyani tanlang!");
+                return;
+            }
+            const type = document.getElementById("action-type").value;
+            const model = document.getElementById("xo-model").value;
+            const qty = document.getElementById("xo-qty").value;
+            
+            if(!model) {
+                alert("Muzlatgich modelini kiriting!");
+                return;
+            }
+
+            alert(`Muvaffaqiyatli saqlandi!\nTashkilot: ${selectedOrg}\nAmal: ${type}\nModel: ${model} (${qty} ta)`);
+            document.getElementById("xo-model").value = "";
+        }
+
+        // ADMIN HUQUQLARI (EDIT / DELETE)
+        function checkAdminAccess() {
+            const isAdmin = ADMIN_IDS.includes(currentUserId);
+            if (!isAdmin) {
+                // Oddiy xodimlarda tahrirlash/o'chirish tugmalarini yashirish
+                document.querySelectorAll('.admin-actions').forEach(el => el.style.display = 'none');
+            }
+        }
+
+        function editLog(id) { alert("Tahrirlash oyna moduli (ID: " + id + ")"); }
+        function deleteLog(id) { 
+            if(confirm("Haqiqatan ham ushbu yozuvni o'chirmoqchimisiz?")) {
+                alert("O'chirildi!"); 
+            }
+        }
+
+        window.onload = function() {
             if (tgUser) {
-                document.getElementById("user-greeting").innerText = `Assalomu alaykum, ${tgUser.first_name}!`;
+                document.getElementById("user-greeting").innerText = `Salom, ${tgUser.first_name}!`;
                 const isAdmin = ADMIN_IDS.includes(currentUserId);
-                document.getElementById("user-info").innerText = `ID: ${currentUserId} | Status: ${isAdmin ? 'Admin 👑' : 'Xodim 👤'}`;
+                document.getElementById("user-info").innerText = `Status: ${isAdmin ? 'Admin 👑' : 'Xodim 👤'}`;
             } else {
-                document.getElementById("user-greeting").innerText = "Assalomu alaykum!";
-                document.getElementById("user-info").innerText = "Test rejimi (Telegram ID aniqlanmadi)";
+                document.getElementById("user-greeting").innerText = "Test Mode";
             }
             renderSidebarMenu();
+            checkAdminAccess();
         };
     </script>
 </body>
