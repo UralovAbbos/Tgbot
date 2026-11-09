@@ -1,362 +1,221 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ombor Boshqaruvi</title>
-    <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0; padding: 0;
-            background-color: #0f1e36; color: #ffffff;
-        }
-        .header {
-            display: flex; align-items: center;
-            background-color: #1e2b37; color: white;
-            padding: 12px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .menu-btn { font-size: 24px; cursor: pointer; margin-right: 15px; user-select: none; }
-        
-        /* SIDEBAR MENYU */
-        .sidebar {
-            height: 100%; width: 0; position: fixed; z-index: 100; top: 0; left: 0;
-            background-color: #142235; overflow-x: hidden; transition: 0.3s; padding-top: 60px;
-        }
-        .sidebar a {
-            padding: 12px 20px; text-decoration: none; font-size: 15px;
-            color: #e1e1e1; display: block; border-bottom: 1px solid #233448;
-        }
-        .sidebar a:hover { background-color: #0088cc; color: #fff; }
-        .sidebar .close-btn { position: absolute; top: 10px; right: 20px; font-size: 28px; color: white; cursor: pointer; }
-
-        /* TAB NAVIGATSIYA (Faqat Main va Tarix qoldi) */
-        .tab-nav { display: flex; background-color: #1a2938; border-bottom: 1px solid #2c3e50; }
-        .tab-btn {
-            flex: 1; padding: 12px 5px; text-align: center; background: none; border: none;
-            color: #8fa0b5; font-weight: bold; font-size: 14px; cursor: pointer; border-bottom: 3px solid transparent;
-        }
-        .tab-btn.active { color: #0088cc; border-bottom: 3px solid #0088cc; }
-
-        .content { padding: 15px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
-        .stat-card { background-color: #192a3a; padding: 15px; border-radius: 8px; border: 1px solid #23344c; }
-        .stat-card h4 { margin: 0 0 5px 0; font-size: 13px; color: #8fa0b5; }
-        .stat-card .value { font-size: 20px; font-weight: bold; color: #ffffff; }
-
-        .card { background-color: #192a3a; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #23344c; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; color: #8fa0b5; margin-bottom: 4px; }
-        .form-group input, .form-group select {
-            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #2c3e50;
-            background-color: #0f1e36; color: white; font-size: 14px;
-        }
-        .btn-submit {
-            width: 100%; padding: 12px; background-color: #0088cc; color: white;
-            border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
-        }
-        .log-item {
-            background-color: #142235; padding: 12px; border-radius: 6px; margin-bottom: 8px;
-            border-left: 4px solid #0088cc; display: flex; justify-content: space-between; align-items: center;
-        }
-        .badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .badge-ustanovka { background-color: #27ae60; color: white; }
-        .badge-vozvrat { background-color: #f39c12; color: white; }
-        .badge-remont { background-color: #e74c3c; color: white; }
-        .btn-delete { background-color: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ombor Boshqaruvi</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;background:#0f1e36;color:#fff}
+.header{background:#1e2b37;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.header b{font-size:15px}
+.org-bar{padding:10px 15px;background:#142235}
+select,input{width:100%;padding:10px;border-radius:6px;border:1px solid #2c3e50;background:#0f1e36;color:#fff;font-size:14px}
+.tabs{display:flex;background:#1a2938;border-bottom:1px solid #2c3e50}
+.tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:3px solid transparent;color:#8fa0b5;font-weight:bold;font-size:14px}
+.tab.active{color:#0088cc;border-bottom-color:#0088cc}
+.content{padding:15px}.pane{display:none}.pane.active{display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px}
+.card{background:#192a3a;border:1px solid #23344c;border-radius:8px;padding:14px;margin-bottom:12px}
+.card small,label{color:#8fa0b5;font-size:12px}
+.big{font-size:24px;font-weight:bold;margin-top:4px}
+label{display:block;margin:10px 0 4px}
+.btn{width:100%;padding:12px;margin-top:14px;background:#0088cc;color:#fff;border:none;border-radius:6px;font-weight:bold}
+.btn:disabled{opacity:.5}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#142235;border-left:4px solid #0088cc;border-radius:6px;padding:10px;margin-bottom:8px;font-size:13px}
+.row small{display:block;color:#8fa0b5;margin-top:3px}
+.badge{padding:2px 7px;border-radius:4px;font-size:11px;font-weight:bold;margin-right:6px}
+.b-ustanovka{background:#27ae60}.b-vozvrat{background:#f39c12}.b-remont{background:#e74c3c}
+.b-remont_qaytdi{background:#8e44ad}.b-kirim{background:#2980b9}
+.sm{border:none;border-radius:4px;color:#fff;padding:6px 9px;font-size:12px;background:#34495e;margin-left:4px}
+.sm.red{background:#c0392b}.sm.green{background:#27ae60}
+.muted{color:#8fa0b5;font-size:13px}
+h4{margin:0 0 10px}
+</style>
 </head>
 <body>
-
-    <div class="header">
-        <span class="menu-btn" onclick="openNav()">&#9776;</span>
-        <h4 style="margin: 0; flex-grow: 1;" id="header-title">Ombor Boshqaruvi</h4>
+<div class="header"><b id="hdr">Ombor Boshqaruvi</b><span id="who"></span></div>
+<div class="org-bar"><select id="org"></select></div>
+<div class="tabs">
+  <button class="tab active" data-t="main">📊 Main</button>
+  <button class="tab" data-t="tasks">📝 Vazifalar</button>
+  <button class="tab" data-t="history">🕒 Tarix</button>
+</div>
+<div class="content">
+  <div id="p-main" class="pane active">
+    <div class="grid">
+      <div class="card"><small>Omborda (zaxira)</small><div class="big" id="s-stock" style="color:#f1c40f">0</div></div>
+      <div class="card"><small>Ta'mirda</small><div class="big" id="s-repair" style="color:#e74c3c">0</div></div>
     </div>
+    <input id="q-main" placeholder="🔍 Model qidirish...">
+    <div id="inv" style="margin-top:10px"></div>
+  </div>
 
-    <div id="mySidebar" class="sidebar">
-        <span class="close-btn" onclick="closeNav()">&times;</span>
-        <h5 style="color: #8fa0b5; padding-left: 20px; margin-bottom: 10px;">ORGANIZATSIYALAR</h5>
-        <div id="org-list"></div>
+  <div id="p-tasks" class="pane">
+    <div class="card">
+      <h4>Yangi amal</h4>
+      <label>Amal turi</label>
+      <select id="action">
+        <option value="ustanovka">Ustanovka (o'rnatish)</option>
+        <option value="vozvrat">Vozvrat (qaytarish)</option>
+        <option value="remont">Remontga berish</option>
+        <option value="remont_qaytdi">Remontdan qaytdi</option>
+        <option value="kirim">Omborga kirim</option>
+      </select>
+      <label>Muzlatgich modeli</label>
+      <input id="q-model" placeholder="🔍 Model qidirish..." style="margin-bottom:6px">
+      <select id="model"></select>
+      <label>Soni</label>
+      <input type="number" id="qty" value="1" min="1" max="10000" inputmode="numeric">
+      <button class="btn" id="save">Saqlash</button>
+      <div class="muted" id="task-note" style="margin-top:8px"></div>
     </div>
+  </div>
 
-    <div style="background-color: #142235; padding: 8px 15px; font-size: 12px; color: #8fa0b5; border-bottom: 1px solid #1a2938;">
-        <span id="user-greeting">Yuklanmoqda...</span> | <span id="user-info"></span>
+  <div id="p-history" class="pane">
+    <div id="admin-box" style="display:none">
+      <h4>👥 Xodimlar dostupi</h4><div id="users"></div><hr style="border-color:#23344c;margin:15px 0">
     </div>
+    <h4>Amallar tarixi</h4>
+    <div id="hist"></div>
+  </div>
+</div>
 
-    <!-- TAB MENYU (Faqat Main va Tarix) -->
-    <div class="tab-nav">
-        <button class="tab-btn active" onclick="switchTab('main')">📊 Main</button>
-        <button class="tab-btn" onclick="switchTab('history')">🕒 Tarix</button>
-    </div>
+<script>
+const tg = Telegram.WebApp; tg.ready(); tg.expand();
+const API = "https://SIZNING-DOMEN/api";   // <-- HTTPS server manzilingiz
+const L = {ustanovka:"Ustanovka",vozvrat:"Vozvrat",remont:"Remontga",remont_qaytdi:"Remontdan qaytdi",kirim:"Kirim"};
+const $ = id => document.getElementById(id);
+let me, orgs = [], models = [], org = "", cur = "main", invItems = [];
 
-    <div class="content">
+function el(tag, cls, text){const e=document.createElement(tag); if(cls)e.className=cls; if(text!==undefined)e.textContent=text; return e}
+async function api(path, opt={}){
+  const r = await fetch(API+path, {...opt, headers:{"Content-Type":"application/json","X-Init-Data":tg.initData}});
+  let d = {}; try{d = await r.json()}catch(e){}
+  if(!r.ok) throw new Error(typeof d.detail==="string" ? d.detail : "Noto'g'ri ma'lumot");
+  return d;
+}
+const msg = t => tg.showAlert ? tg.showAlert(t) : alert(t);
 
-        <!-- 1. MAIN TAB (Vazifalar, ombor qoldig'i va kiritish shu yerda joylashdi) -->
-        <div id="tab-main" class="tab-content active">
-            <h4 id="selected-org-name" style="margin-top: 0; color: #0088cc;">Organizatsiyani tanlang</h4>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h4>Omborda (Zaxira)</h4>
-                    <div class="value" id="stat-stock" style="color: #f1c40f;">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Ta'mirda</h4>
-                    <div class="value" id="stat-repair" style="color: #e74c3c;">0</div>
-                </div>
-            </div>
+function show(tab){
+  cur = tab;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active", b.dataset.t===tab));
+  document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active", p.id==="p-"+tab));
+  refresh();
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>show(b.dataset.t));
+$("org").onchange = () => { org = $("org").value; $("hdr").textContent = $("org").selectedOptions[0].text; refresh(); };
 
-            <!-- YANGI AMAL KIRITISH FORMASI -->
-            <div class="card">
-                <h4 style="margin-top: 0;">Yangi Amal Kiritish</h4>
-                <div class="form-group">
-                    <label>Amal turi</label>
-                    <select id="action-type">
-                        <option value="ustanovka">Ustanovka (O'rnatish)</option>
-                        <option value="vozvrat">Vozvrat (Qaytarish)</option>
-                        <option value="remont">Remontga berish</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Muzlatgich Modeli (XO)</label>
-                    <select id="xo-model" onchange="loadInventoryData()">
-                        <option value="UBC PEARL Pepsi 0,5-Д">UBC PEARL Pepsi 0,5-Д</option>
-                        <option value="UGUR USS 374 PEPSI 1-Д">UGUR USS 374 PEPSI 1-Д</option>
-                        <option value="Klimasan D372 PEPSI 1-Д">Klimasan D372 PEPSI 1-Д</option>
-                        <option value="UGUR USS690 PEPSI 1,5-Д">UGUR USS690 PEPSI 1,5-Д</option>
-                        <option value="Klimasan S 770 PEPSI 1,5-Д">Klimasan S 770 PEPSI 1,5-Д</option>
-                        <option value="UBC PRIME XL Pepsi 1,5-Д">UBC PRIME XL Pepsi 1,5-Д</option>
-                        <option value="UBC IDEAL LARGE Pepsi 2-Д">UBC IDEAL LARGE Pepsi 2-Д</option>
-                        <option value="Klimasan S880 PEPSI 2-Д">Klimasan S880 PEPSI 2-Д</option>
-                        <option value="Klimasan S900 PEPSI 2-Д">Klimasan S900 PEPSI 2-Д</option>
-                        <option value="UGUR USS 1000 PEPSI 2-Д">UGUR USS 1000 PEPSI 2-Д</option>
-                        <option value="Klimasan S1200 PEPSI 2-Д">Klimasan S1200 PEPSI 2-Д</option>
-                        <option value="UGUR USS 1600 PEPSI 3-Д">UGUR USS 1600 PEPSI 3-Д</option>
-                        <option value="UGUR USS1500 Pepsi 5-Д">UGUR USS1500 Pepsi 5-Д</option>
-                        <option value="Klimasan S1600 PEPSI 5-Д">Klimasan S1600 PEPSI 5-Д</option>
-                        <option value="UBC Extra Large Pepsi 5-Д">UBC Extra Large Pepsi 5-Д</option>
-                        <option value="OpenFront">OpenFront</option>
-                        <option value="RGB">RGB</option>
-                        <option value="UBC OMEGA Pepsi 1,5-Д">UBC OMEGA Pepsi 1,5-Д</option>
-                        <option value="UBC EXTRA LARGE Pepsi 3-Д">UBC EXTRA LARGE Pepsi 3-Д</option>
-                        <option value="UGUR USS 810 PEPSI 1,5-Д">UGUR USS 810 PEPSI 1,5-Д</option>
-                        <option value="UGUR USS 900 PEPSI 2-Д">UGUR USS 900 PEPSI 2-Д</option>
-                        <option value="UGUR USS 1200 PEPSI 2-Д">UGUR USS 1200 PEPSI 2-Д</option>
-                        <option value="Klimasan S1300 PEPSI NEON 2-Д">Klimasan S1300 PEPSI NEON 2-Д</option>
-                        <option value="Klimasan S 770 PEPSI NEON 1,5-Д">Klimasan S 770 PEPSI NEON 1,5-Д</option>
-                        <option value="UGUR USS750 PEPSI 1,5-Д">UGUR USS750 PEPSI 1,5-Д</option>
-                        <option value="Klimasan S 1100 PEPSI 2-Д">Klimasan S 1100 PEPSI 2-Д</option>
-                        <option value="Klimasan S1600 PEPSI LUNA 2D">Klimasan S1600 PEPSI LUNA 2D</option>
-                        <option value="UGUR USS1500 Pepsi 3-Д">UGUR USS1500 Pepsi 3-Д</option>
-                        <option value="Klimasan S1600 PEPSI LUNA 3D">Klimasan S1600 PEPSI LUNA 3D</option>
-                        <option value="Klimasan S1600 PEPSI WOC 3-Д">Klimasan S1600 PEPSI WOC 3-Д</option>
-                        <option value="UGUR USS 420 DTK LEAN Premium PEPSI 1,5-Д">UGUR USS 420 DTK LEAN Premium PEPSI 1,5-Д</option>
-                        <option value="ARTEL Shivaki SHS190SN PEPSI">ARTEL Shivaki SHS190SN PEPSI</option>
-                        <option value="Simfer SDS 710 DC 1 YF Neon PEPSI">Simfer SDS 710 DC 1 YF Neon PEPSI</option>
-                        <option value="UGUR USS 1200 D2K UCOOL Neon PEPSI">UGUR USS 1200 D2K UCOOL Neon PEPSI</option>
-                        <option value="Simfer SDS 1210 DC 2 YF Neon PEPSI">Simfer SDS 1210 DC 2 YF Neon PEPSI</option>
-                        <option value="UGUR USS 1600 D2K FIBER PEPSI">UGUR USS 1600 D2K FIBER PEPSI</option>
-                        <option value="UGUR USS 420 Pepsi">UGUR USS 420 Pepsi</option>
-                        <option value="UGUR USS 374 Pepsi New">UGUR USS 374 Pepsi New</option>
-                        <option value="Simfer SDS 1510 DC 2 YF LEGEND PEPSI">Simfer SDS 1510 DC 2 YF LEGEND PEPSI</option>
-                        <option value="UGUR USS 420 Rock star 1,5-Д">UGUR USS 420 Rock star 1,5-Д</option>
-                        <option value="USS175 Rock star 0,5-Д">USS175 Rock star 0,5-Д</option>
-                        <option value="UGUR USS 374 Rock star 1-Д">UGUR USS 374 Rock star 1-Д</option>
-                        <option value="Klimasan D372 LIPTON 1-Д">Klimasan D372 LIPTON 1-Д</option>
-                        <option value="UGUR USS 374 LIPTON 1-Д">UGUR USS 374 LIPTON 1-Д</option>
-                        <option value="Klimasan S1200 LIPTON 2-Д">Klimasan S1200 LIPTON 2-Д</option>
-                        <option value="UGUR USS 420 DTK LEAN Premium LIPTON">UGUR USS 420 DTK LEAN Premium LIPTON</option>
-                        <option value="UGUR USS 420 DTK LEAN LIPTON">UGUR USS 420 DTK LEAN LIPTON</option>
-                        <option value="Simfer SDS 710 DC 1 YF Neon LIPTON">Simfer SDS 710 DC 1 YF Neon LIPTON</option>
-                        <option value="МиниХО">МиниХО</option>
-                        <option value="UGUR USS 420 Ad. Rush 1,5-Д">UGUR USS 420 Ad. Rush 1,5-Д</option>
-                        <option value="UBC SLIM AR PREMIUM 0,5-Д">UBC SLIM AR PREMIUM 0,5-Д</option>
-                        <option value="USS175 Ad. Rush 0,5-Д">USS175 Ad. Rush 0,5-Д</option>
-                        <option value="UBC PEARL Ad. Rush 0,5-Д">UBC PEARL Ad. Rush 0,5-Д</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Soni</label>
-                    <input type="number" id="xo-qty" value="1">
-                </div>
-                <button class="btn-submit" onclick="submitTask()">Saqlash</button>
-            </div>
-        </div>
+function refresh(){
+  if(cur==="main") loadMain();
+  else if(cur==="tasks") taskNote();
+  else { loadHistory(); if(me.is_admin) loadUsers(); }
+}
 
-        <!-- 2. TARIX TAB -->
-        <div id="tab-history" class="tab-content">
-            <h4 style="margin-top: 0;">Amallar Tarixi</h4>
-            <div id="history-list">
-                <p style="color: #8fa0b5;">Ma'lumotlar yuklanmoqda...</p>
-            </div>
-        </div>
+// ---------- MAIN ----------
+async function loadMain(){
+  try{
+    const d = await api("/inventory?org="+encodeURIComponent(org));
+    $("s-stock").textContent = d.stock; $("s-repair").textContent = d.repair;
+    invItems = d.items; renderInv();
+  }catch(e){ msg(e.message) }
+}
+function renderInv(){
+  const q = $("q-main").value.toLowerCase(), box = $("inv"); box.replaceChildren();
+  const list = invItems.filter(i=>i.product.toLowerCase().includes(q));
+  if(!list.length) box.append(el("p","muted","Qoldiq yo'q. «Vazifalar» bo'limida «Omborga kirim» orqali qo'shing."));
+  list.forEach(i=>{
+    const r = el("div","row"); r.append(el("span","",i.product));
+    const s = el("span","", `📦 ${i.stock}  🔧 ${i.repair}`); s.style.whiteSpace="nowrap"; r.append(s); box.append(r);
+  });
+}
+$("q-main").oninput = renderInv;
 
-    </div>
+// ---------- VAZIFALAR ----------
+function fillModels(){
+  const q = $("q-model").value.toLowerCase(), s = $("model"); s.replaceChildren();
+  models.filter(m=>m.toLowerCase().includes(q)).forEach(m=>{const o=el("option","",m); o.value=m; s.append(o)});
+}
+$("q-model").oninput = fillModels;
+function taskNote(){
+  const all = org==="ALL";
+  $("save").disabled = all;
+  $("task-note").textContent = all ? "Amal kiritish uchun yuqoridan aniq filialni tanlang." : "Filial: "+org;
+}
+$("save").onclick = async () => {
+  const qty = parseInt($("qty").value);
+  if(!qty || qty<1) return msg("Sonni to'g'ri kiriting!");
+  if(!$("model").value) return msg("Model tanlang!");
+  $("save").disabled = true;
+  try{
+    const d = await api("/tasks",{method:"POST",body:JSON.stringify({org, action:$("action").value, product:$("model").value, qty})});
+    msg(d.message); $("qty").value = 1;
+  }catch(e){ msg(e.message) }
+  $("save").disabled = false;
+};
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+// ---------- TARIX ----------
+async function loadHistory(){
+  const box = $("hist"); box.replaceChildren();
+  try{
+    const logs = await api("/history?org="+encodeURIComponent(org));
+    if(!logs.length) box.append(el("p","muted","Hozircha amallar yo'q."));
+    logs.forEach(l=>{
+      const r = el("div","row"), left = el("div");
+      const line = el("div"); line.append(el("span","badge b-"+l.action_type, (L[l.action_type]||l.action_type).toUpperCase()));
+      left.append(line);
+      const t = el("strong","",`${l.product_name} (${l.qty} ta)`); t.style.display="block"; t.style.marginTop="4px"; left.append(t);
+      left.append(el("small","",`${org==="ALL"?l.org_name+" | ":""}${l.user_name} | ${l.timestamp}`));
+      r.append(left);
+      if(me.can_edit){
+        const b = el("button","sm red","🗑️");
+        b.onclick = () => tg.showConfirm("Yozuv o'chirilsinmi? Qoldiq ham qaytariladi.", async ok=>{
+          if(!ok) return;
+          try{ msg((await api("/history/"+l.id,{method:"DELETE"})).message); loadHistory() }catch(e){ msg(e.message) }
+        });
+        r.append(b);
+      }
+      box.append(r);
+    });
+  }catch(e){ msg(e.message) }
+}
 
-        const tgUser = tg.initDataUnsafe?.user;
-        const currentUserId = tgUser ? tgUser.id : 8777094765; // Test uchun default ID
-        const currentUserFullName = tgUser ? tgUser.first_name : "Abbos";
+// ---------- ADMIN: XODIMLAR ----------
+async function loadUsers(){
+  $("admin-box").style.display = "block";
+  const box = $("users"); box.replaceChildren();
+  try{
+    (await api("/admin/users")).forEach(u=>{
+      const r = el("div","row"), left = el("div");
+      left.append(el("strong","",u.name), el("small","",`ID: ${u.id}`), el("small","",u.orgs.join(", ")));
+      const act = el("div"); act.style.whiteSpace="nowrap";
+      const t = el("button","sm "+(u.can_edit?"green":""), u.can_edit?"✏️ Ruxsat bor":"🔒 Ruxsat yo'q");
+      t.onclick = async()=>{ try{ await api("/admin/users/"+u.id,{method:"PATCH",body:JSON.stringify({can_edit:!u.can_edit})}); loadUsers() }catch(e){ msg(e.message) } };
+      const i = el("button","sm","ID");
+      i.onclick = async()=>{
+        const v = prompt("Yangi Telegram ID:", u.id); if(!v) return;
+        if(!/^\d+$/.test(v)) return msg("ID faqat raqam bo'lishi kerak");
+        try{ await api("/admin/users/"+u.id,{method:"PATCH",body:JSON.stringify({new_id:parseInt(v)})}); loadUsers() }catch(e){ msg(e.message) }
+      };
+      act.append(t,i); r.append(left,act); box.append(r);
+    });
+  }catch(e){ msg(e.message) }
+}
 
-        const API_URL = "http://127.0.0.1:8000/api"; // Server manzili (Cloud'ga chiqqanda o'zgaradi)
-
-        const allOrganizations = [
-            "Admin (Barcha filiallarga dostup)", 
-            "IO", "Бухара-2", "Зарафшан", "Навои", "Бухара", 
-            "Коканд", "Наманган-2", "Андижан", "Фергана-2", 
-            "EW", "Sterling Beverages", 
-            "Шахрисабз", "Карши", "Денау", "Карши-2", "Термез", 
-            "Нукус", "Хорезм", "Турткуль", 
-            "Самарканд Трейдинг", "Самарканд Карвон", "Каттакурган", "Джиззак", 
-            "Янгиюль", "Алмалык", "Сырдарья", "Чирчик"
-        ];
-
-        let selectedOrg = null;
-        let userRole = "employee";
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            event.target.classList.add('active');
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            if(tabName === 'history') loadHistory();
-        }
-
-        function openNav() { document.getElementById("mySidebar").style.width = "250px"; }
-        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
-
-        function renderSidebarMenu() {
-            const container = document.getElementById("org-list");
-            container.innerHTML = "";
-
-            allOrganizations.forEach(org => {
-                const a = document.createElement("a");
-                a.href = "#";
-                a.innerText = org;
-                a.onclick = () => selectOrganization(org);
-                container.appendChild(a);
-            });
-        }
-
-        async function selectOrganization(orgName) {
-            selectedOrg = orgName;
-            document.getElementById("selected-org-name").innerText = orgName;
-            document.getElementById("header-title").innerText = orgName;
-            closeNav();
-            loadInventoryData();
-        }
-
-        // Bazadan tanlangan XO qoldig'ini olish
-        async function loadInventoryData() {
-            if (!selectedOrg) return;
-            const model = document.getElementById("xo-model").value;
-            
-            try {
-                const res = await fetch(`${API_URL}/inventory?org_name=${encodeURIComponent(selectedOrg)}&product_name=${encodeURIComponent(model)}`);
-                const data = await res.json();
-                document.getElementById("stat-stock").innerText = data.stock;
-                document.getElementById("stat-repair").innerText = data.repair;
-            } catch (err) {
-                console.error("Xatolik:", err);
-            }
-        }
-
-        // Amalni saqlash va bazaga yuborish
-        async function submitTask() {
-            if (!selectedOrg) {
-                alert("Iltimos, oldin menyudan organizatsiyani tanlang!");
-                return;
-            }
-            const type = document.getElementById("action-type").value;
-            const model = document.getElementById("xo-model").value;
-            const qty = document.getElementById("xo-qty").value;
-
-            const payload = {
-                org_name: selectedOrg,
-                action_type: type,
-                product_name: model,
-                qty: parseInt(qty),
-                user_name: currentUserFullName
-            };
-
-            try {
-                const res = await fetch(`${API_URL}/submit-task`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-                const result = await res.json();
-                alert(result.message);
-                loadInventoryData(); // Qoldiqni yangilash
-            } catch (err) {
-                alert("Server bilan aloqa yo'q!");
-            }
-        }
-
-        // Tarixni yuklab kelish
-        async function loadHistory() {
-            if (!selectedOrg) {
-                document.getElementById("history-list").innerHTML = "<p>Oldin organizatsiyani tanlang!</p>";
-                return;
-            }
-            try {
-                const res = await fetch(`${API_URL}/history?org_name=${encodeURIComponent(selectedOrg)}`);
-                const logs = await res.json();
-                
-                const container = document.getElementById("history-list");
-                container.innerHTML = "";
-
-                if (logs.length === 0) {
-                    container.innerHTML = "<p style='color:#8fa0b5;'>Hozircha amallar tarixi yo'q.</p>";
-                    return;
-                }
-
-                logs.forEach(log => {
-                    const div = document.createElement("div");
-                    div.className = "log-item";
-                    div.innerHTML = `
-                        <div>
-                            <span class="badge badge-${log.action_type}">${log.action_type.toUpperCase()}</span>
-                            <strong style="font-size: 13px; display: block; margin-top: 3px;">${log.product_name} (${log.qty} ta)</strong>
-                            <small style="color: #8fa0b5;">Kiritdi: ${log.user_name} | ${log.timestamp}</small>
-                        </div>
-                        ${userRole === 'admin' ? `<button class="btn-delete" onclick="deleteLog(${log.id})">🗑️</button>` : ''}
-                    `;
-                    container.appendChild(div);
-                });
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        async function deleteLog(id) {
-            if (confirm("Haqiqatan ham bu yozuvni o'chirmoqchimisiz?")) {
-                await fetch(`${API_URL}/history/${id}`, { method: "DELETE" });
-                loadHistory();
-            }
-        }
-
-        window.onload = async function() {
-            try {
-                const res = await fetch(`${API_URL}/user-data?user_id=${currentUserId}`);
-                const data = await res.json();
-                userRole = data.role;
-                document.getElementById("user-greeting").innerText = `Salom, ${data.full_name}!`;
-                document.getElementById("user-info").innerText = `Status: ${data.role === 'admin' ? 'Admin 👑' : 'Xodim 👤'}`;
-            } catch (e) {
-                document.getElementById("user-greeting").innerText = `Salom, ${currentUserFullName}!`;
-            }
-            renderSidebarMenu();
-        };
-    </script>
+// ---------- BOSHLASH ----------
+(async()=>{
+  if(!tg.initData){ document.body.replaceChildren(el("p","muted","Iltimos, ilovani Telegram bot orqali oching.")); return }
+  try{
+    const d = await api("/meta"); me = d.me; orgs = d.orgs; models = d.models;
+    $("who").textContent = `${me.name} ${me.is_admin?"👑":"👤"}`;
+    const sel = $("org");
+    if(me.is_admin){ const o=el("option","","📦 Barcha filiallar"); o.value="ALL"; sel.append(o) }
+    orgs.forEach(x=>{const o=el("option","",x); o.value=x; sel.append(o)});
+    org = sel.value; $("hdr").textContent = sel.selectedOptions[0].text;
+    fillModels(); refresh();
+  }catch(e){ document.body.replaceChildren(el("p","muted",e.message)) }
+})();
+</script>
 </body>
 </html>
